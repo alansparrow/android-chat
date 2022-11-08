@@ -17,9 +17,17 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     LogUtil.log(TAG, 'a user connected');
+    socket.broadcast.emit('chat message', 'a new user has joined');
+
+    socket.on('chat message', (msg) => {
+        LogUtil.log(TAG, msg);
+        io.emit('chat message', msg);
+    });
+
     socket.on('disconnect', () => {
         LogUtil.log(TAG, 'a user disconnected');
-    })
+        socket.broadcast.emit('chat message', 'a new user has left');
+    });
 })
 
 server.listen(Config.PORT, () => {
