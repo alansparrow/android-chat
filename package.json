@@ -1,0 +1,8 @@
+{
+    "name": "android-chat-app-using-socket-io",
+    "version": "0.0.1",
+    "description": "Android chat app using socket.io",
+    "dependencies": {
+        "express": "^4.18.2"
+    }
+}
