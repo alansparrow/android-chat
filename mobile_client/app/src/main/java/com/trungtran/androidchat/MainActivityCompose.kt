@@ -1,23 +1,24 @@
 package com.trungtran.androidchat
 
 import android.os.Bundle
-import android.util.Log
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.trungtran.androidchat.comm.SocketIO
+import androidx.compose.ui.viewinterop.AndroidView
 import com.trungtran.androidchat.ui.theme.AndroidChatTheme
 
 class MainActivityCompose : ComponentActivity() {
@@ -67,7 +68,7 @@ fun MultiChat() {
             .fillMaxWidth()
             .background(Color.Yellow)
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1.0f)
@@ -76,13 +77,15 @@ fun MultiChat() {
             NativeChat()
         }
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1.0f)
                 .background(Color.Red)
         ) {
-            WebChat()
+            Box(modifier = Modifier.align(Alignment.BottomStart)) {
+                WebChat()
+            }
         }
     }
 }
@@ -95,9 +98,14 @@ fun NativeChat() {
 
 @Composable
 fun WebChat() {
-    Text("WebChat1")
-    Text("WebChat2")
-    Text("WebChat3")
+    AndroidView(factory = { ctx ->
+        WebView(ctx).apply {
+            webViewClient = WebViewClient()
+            webChromeClient = WebChromeClient()
+            settings.javaScriptEnabled = true
+            loadUrl(Constant.CHAT_SERVER_URI)
+        }
+    }, update = {})
 }
 
 @Composable
