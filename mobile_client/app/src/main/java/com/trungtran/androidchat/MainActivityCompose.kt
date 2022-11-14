@@ -11,9 +11,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,15 +23,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.trungtran.androidchat.comm.SocketIO
 import com.trungtran.androidchat.ui.theme.AndroidChatTheme
+import kotlinx.coroutines.launch
 
 class MainActivityCompose : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var msgs by mutableStateOf<List<String>>(mutableListOf())
+        msgs += listOf("Started")
+
         setContent {
             AndroidChatTheme {
                 Scaffold(
                     content = {
-                        MultiChat()
+                        MultiChat(msgs)
                     }
                 )
             }
@@ -46,9 +51,12 @@ class MainActivityCompose : ComponentActivity() {
         mSocket.on("chat message") {
             if (it[0] != null) {
                 val msg = it[0] as String
-                Log.d(MainActivityCompose.TAG, "received: $msg")
+                msgs += listOf(msg)
+                Log.d(TAG, "received: $msg")
             }
         }
+
+
     }
 
     companion object {
@@ -57,7 +65,7 @@ class MainActivityCompose : ComponentActivity() {
 }
 
 @Composable
-fun MultiChat() {
+fun MultiChat(msgs: List<String>) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -68,13 +76,17 @@ fun MultiChat() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1.0f)
-                .background(Color.Blue)
+//                .background(Color.Blue)
         ) {
-            NativeChat()
+            NativeChat(msgs)
         }
 
         // Add a horizontal space between the img and the column
         Spacer(modifier = Modifier.width((8.dp)))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .weight(0.1f)
+            .background(Color.Yellow))
 
         Box(
             modifier = Modifier
@@ -90,21 +102,28 @@ fun MultiChat() {
 }
 
 @Composable
-fun NativeChat() {
-    val messages = mutableListOf<String>()
+fun NativeChat(msgs: List<String>) {
+    val messages: MutableList<String> = mutableListOf()
     for (i in 1..50) {
         messages.add("msg $i")
     }
 
-    Messages(messages)
+    Messages(msgs)
 }
 
 @Composable
 fun Messages(messages: List<String>, modifier: Modifier = Modifier) {
-    LazyColumn {
-        items(messages) {
-            message -> Message(message)
+    val listState = rememberLazyListState()
+    val corountineScope = rememberCoroutineScope()
+
+    LazyColumn(state = listState) {
+        items(messages) { message ->
+            Message(message)
         }
+    }
+
+    corountineScope.launch {
+        listState.animateScrollToItem(messages.size - 1)
     }
 }
 
