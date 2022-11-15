@@ -143,7 +143,6 @@ fun NativeChat(msgs: List<String>) {
 @Composable
 fun Messages(messages: List<String>, modifier: Modifier = Modifier) {
     val listState = rememberLazyListState()
-    val corountineScope = rememberCoroutineScope()
 
     LazyColumn(state = listState) {
         items(messages) { message ->
@@ -151,10 +150,8 @@ fun Messages(messages: List<String>, modifier: Modifier = Modifier) {
         }
     }
 
-    LaunchedEffect(listState) {
-        corountineScope.launch {
-            listState.animateScrollToItem(messages.size - 1)
-        }
+    LaunchedEffect(key1 = messages.size) {
+        listState.animateScrollToItem(messages.size - 1)
     }
 }
 
