@@ -16,17 +16,17 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    LogUtil.log(TAG, 'a user connected');
-    socket.broadcast.emit('chat message', 'a new user has joined');
+    LogUtil.log(TAG, socket.id + ' connected');
+    socket.broadcast.emit('chat message', socket.id + ' has joined');
 
     socket.on('chat message', (msg) => {
         LogUtil.log(TAG, msg);
-        io.emit('chat message', msg);
+        io.emit('chat message', socket.id + ": " + msg);
     });
 
     socket.on('disconnect', () => {
-        LogUtil.log(TAG, 'a user disconnected');
-        socket.broadcast.emit('chat message', 'a new user has left');
+        LogUtil.log(TAG, socket.id + ' disconnected');
+        socket.broadcast.emit('chat message', socket.id + ' has left');
     });
 })
 
