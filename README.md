@@ -5,3 +5,6 @@ Design doc and installation guideline: https://docs.google.com/document/d/1Pdpop
 
 ## Installation
 Please follow the guideline in the document.
+
+## Demo Video
+https://gitea.scopicsoftware.com/scopic-trainings/trung-tran-native-socket.oi-android/src/branch/main/screenshot/screen-capture.webm
