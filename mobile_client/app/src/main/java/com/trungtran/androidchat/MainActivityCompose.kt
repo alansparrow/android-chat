@@ -23,9 +23,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.trungtran.androidchat.comm.SocketIO
 import com.trungtran.androidchat.ui.theme.AndroidChatTheme
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
+import io.socket.client.Socket
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivityCompose : ComponentActivity() {
+
+    @Inject
+    lateinit var mSocket: Socket
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var msgs by mutableStateOf<List<String>>(mutableListOf())
@@ -38,13 +45,7 @@ class MainActivityCompose : ComponentActivity() {
             }
         }
 
-
-        SocketIO.setSocket()
-        SocketIO.connect()
-
-        val mSocket = SocketIO.getSocket()
         mSocket.emit("chat message", "Hi from mobile!")
-
         mSocket.on("chat message") {
             if (it[0] != null) {
                 val msg = it[0] as String
@@ -52,8 +53,6 @@ class MainActivityCompose : ComponentActivity() {
                 Log.d(TAG, "received: $msg")
             }
         }
-
-
     }
 
     companion object {
